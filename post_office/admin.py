@@ -7,6 +7,7 @@ from django.forms.widgets import TextInput
 from django.utils import six
 from django.utils.text import Truncator
 from django.utils.translation import ugettext_lazy as _
+from modeltranslation.admin import TranslationAdmin
 
 from .fields import CommaSeparatedEmailField
 from .models import Email, Log, EmailTemplate, STATUS
@@ -87,7 +88,7 @@ class EmailTemplateInline(admin.StackedInline):
         return len(settings.LANGUAGES)
 
 
-class EmailTemplateAdmin(admin.ModelAdmin):
+class EmailTemplateAdmin(TranslationAdmin):
     list_display = ('name', 'description_shortened', 'subject', 'languages_compact', 'created')
     search_fields = ('name', 'description', 'subject')
     fieldsets = [
@@ -98,10 +99,6 @@ class EmailTemplateAdmin(admin.ModelAdmin):
             'fields': ('subject', 'content', 'html_content'),
         }),
     ]
-    inlines = (EmailTemplateInline,) if settings.USE_I18N else ()
-    formfield_overrides = {
-        models.CharField: {'widget': SubjectField}
-    }
 
     def get_queryset(self, request):
         return self.model.objects.filter(default_template__isnull=True)
