@@ -89,7 +89,7 @@ class EmailTemplateInline(admin.StackedInline):
 
 
 class EmailTemplateAdmin(TranslationAdmin):
-    list_display = ('name', 'description_shortened', 'subject', 'languages_compact', 'created')
+    list_display = ('name', 'description_shortened', 'subject', 'created')
     search_fields = ('name', 'description', 'subject')
     fieldsets = [
         (None, {
@@ -107,11 +107,6 @@ class EmailTemplateAdmin(TranslationAdmin):
         return Truncator(instance.description.split('\n')[0]).chars(200)
     description_shortened.short_description = _("Description")
     description_shortened.admin_order_field = 'description'
-
-    def languages_compact(self, instance):
-        languages = [tt.language for tt in instance.translated_templates.all()]
-        return ', '.join(languages)
-    languages_compact.short_description = _("Languages")
 
 admin.site.register(Email, EmailAdmin)
 admin.site.register(Log, LogAdmin)
