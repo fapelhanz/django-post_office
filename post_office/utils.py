@@ -7,7 +7,6 @@ try:
     from django.utils.encoding import force_text
 except ImportError:
     from django.utils.encoding import force_unicode as force_text
-
 from post_office import cache
 from .compat import string_types
 from .models import Email, PRIORITY, STATUS, EmailTemplate, Attachment
@@ -51,15 +50,14 @@ def get_email_template(name, language=''):
     Function that returns an email template instance, from cache or DB.
     """
     if hasattr(settings, 'POST_OFFICE_CACHE') and settings.POST_OFFICE_TEMPLATE_CACHE is False:
-        return EmailTemplate.objects.get(name=name, language=language)
+        return EmailTemplate.objects.get(name=name)
     else:
         composite_name = '%s:%s' % (name, language)
         email_template = cache.get(composite_name)
         if email_template is not None:
             return email_template
         else:
-            email_template = EmailTemplate.objects.get(name=name,
-                                                       language=language)
+            email_template = EmailTemplate.objects.get(name=name)
             cache.set(composite_name, email_template)
             return email_template
 

@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.db import connection as db_connection
 from django.db.models import Q
 from django.template import Context, Template
-
+from django.utils import translation
 from .connections import connections
 from .models import Email, EmailTemplate, PRIORITY, STATUS
 from .settings import (get_available_backends, get_batch_size,
@@ -137,19 +137,16 @@ def send(recipients=None, sender=None, template=None, context=None, subject='',
         # template can be an EmailTemplate instance or name
         if isinstance(template, EmailTemplate):
             template = template
-            # If language is specified, ensure template uses the right language
-            if language:
-                if template.language != language:
-                    template = template.translated_templates.get(language=language)
         else:
             template = get_email_template(template, language)
 
     if backend and backend not in get_available_backends().keys():
         raise ValueError('%s is not a valid backend alias' % backend)
 
-    email = create(sender, recipients, cc, bcc, subject, message, html_message,
-                   context, scheduled_time, headers, template, priority,
-                   render_on_delivery, commit=commit, backend=backend)
+    with translation.override(language):
+        email = create(sender, recipients, cc, bcc, subject, message, html_message,
+                       context, scheduled_time, headers, template, priority,
+                       render_on_delivery, commit=commit, backend=backend)
 
     if attachments:
         attachments = create_attachments(attachments)
