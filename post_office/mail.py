@@ -94,7 +94,7 @@ def create(sender, recipients=None, cc=None, bcc=None, subject='', message='',
 def send(recipients=None, sender=None, template=None, context=None, subject='',
          message='', html_message='', scheduled_time=None, headers=None,
          priority=None, attachments=None, render_on_delivery=False,
-         log_level=None, commit=True, cc=None, bcc=None, language='',
+         log_level=None, commit=True, cc=None, bcc=None, language=translation.get_language(),
          backend=''):
 
     try:
